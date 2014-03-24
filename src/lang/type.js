@@ -31,6 +31,9 @@ define(function() {
     function isNumeric(obj) {
 
     }
+    function isObject(obj) {
+        return obj === Object(obj);
+    }
     function isPlainObject(obj) {
 
     }
@@ -41,6 +44,7 @@ define(function() {
     return {
         typeOf: typeOf,
         isArray: isArray,
-        isWindow: isWindow
+        isWindow: isWindow,
+        isObject: isObject
     }
 });
