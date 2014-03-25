@@ -26,7 +26,8 @@ define(function() {
 
     }
     function isWindow(obj) {
-        return obj != null && obj === obj.window;
+        // should be eqeq; ie6 eqeqeq false
+        return obj != null && obj == obj.window;
     }
     function isNumeric(obj) {
 

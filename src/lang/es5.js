@@ -27,6 +27,7 @@ define(['koko/lang/type'], function(Type) {
     // object
     object.keys = function(obj) {
         if(!Type.isObject(obj)) {
+            throw new TypeError('Object.keys called on non-object');
             return [];
         }
         if(Object.keys) {
@@ -46,7 +47,10 @@ define(['koko/lang/type'], function(Type) {
     };
 
     object.getPrototypeOf = function(obj) {
-
+        var getPrototypeOfProto = objectPrototype.getPrototypeOf;
+        if(getPrototypeOfProto) {
+            return getPrototypeOfProto.call(obj);
+        }
     };
 
     // string
@@ -73,7 +77,7 @@ define(['koko/lang/type'], function(Type) {
             return indexOfProto.call(array, item, i);
         }
         for(; i < length; i++) {
-            if(array[i] === item) {
+            if(i in array && array[i] === item) {
                 return i;
             }
         }
@@ -94,7 +98,7 @@ define(['koko/lang/type'], function(Type) {
             return lastIndexOfProto.call(array, item, i);
         }
         for(; i > -1; i--) {
-            if(array[i] === item) {
+            if(i in array && array[i] === item) {
                 return i;
             }
         }
