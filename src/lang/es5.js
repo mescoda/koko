@@ -1,10 +1,12 @@
 define(['koko/lang/type'], function(Type) {
     var json = {},
         object = {},
+        fn = {},
         string = {},
         array = {};
 
     var objectPrototype = Object.prototype,
+        functionPrototype = Function.prototype,
         stringPrototype = String.prototype,
         arrayPrototype = Array.prototype;
 
@@ -42,14 +44,46 @@ define(['koko/lang/type'], function(Type) {
         return keys;
     };
 
-    object.create = function() {
-
+    object.create = function(obj) {
+        function newObj() {}
+        newObj.prototype = obj;
+        return new newObj();
     };
 
     object.getPrototypeOf = function(obj) {
         var getPrototypeOfProto = objectPrototype.getPrototypeOf;
         if(getPrototypeOfProto) {
             return getPrototypeOfProto.call(obj);
+        } else {
+            return obj.__proto__ || obj.constructor.prototype;
+        }
+    };
+
+    // function
+    fn.bind = function(fn, context) {
+        var bindProto = functionPrototype.bind,
+            bindArgs = arrayPrototype.slice.call(arguments, 2),
+            newObj = function() {},
+            bound;
+        if(bindProto) {
+            return bindProto.apply(fn, arrayPrototype.slice.call(arguments, 1));
+        } else {
+            bound = function() {
+                var args = bindArgs.concat( arrayPrototype.slice.call(arguments) ),
+                    newInstance,
+                    result;
+                if(!(this instanceof bound)) {
+                    return fn.apply(context, args);
+                }
+                newObj.prototype = fn.prototype;
+                newInstance = new newObj;
+                result = fn.apply(newInstance, args);
+                if(Object(result) === result) {
+                    return result;
+                }
+                return newInstance;
+            };
+            return bound;
         }
     };
 
@@ -205,6 +239,7 @@ define(['koko/lang/type'], function(Type) {
     return {
         json: json,
         object: object,
+        fn: fn,
         string: string,
         array: array
     };
