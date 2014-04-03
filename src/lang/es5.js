@@ -1,9 +1,9 @@
-define(['koko/lang/type'], function(Type) {
+define(['koko/lang/type'], function(type) {
     var json = {},
         object = {},
+        array = {},
         fn = {},
-        string = {},
-        array = {};
+        string = {};
 
     var objectPrototype = Object.prototype,
         functionPrototype = Function.prototype,
@@ -28,7 +28,7 @@ define(['koko/lang/type'], function(Type) {
 
     // object
     object.keys = function(obj) {
-        if(!Type.isObject(obj)) {
+        if(!type.isObject(obj)) {
             throw new TypeError('Object.keys called on non-object');
             return [];
         }
@@ -239,9 +239,9 @@ define(['koko/lang/type'], function(Type) {
     return {
         json: json,
         object: object,
+        array: array,
         fn: fn,
-        string: string,
-        array: array
+        string: string
     };
 
 });
