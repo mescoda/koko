@@ -101,5 +101,5 @@ define(function() {
         isFunction: isFunction,
         isElement: isElement,
         isWindow: isWindow
-    }
+    };
 });
