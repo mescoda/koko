@@ -25,30 +25,20 @@ define(function() {
         return Array.isArray ? Array.isArray(obj) : typeOf(obj) === 'array';
     }
 
-// copy from jquery
     function isArrayLike(obj) {
         var length = obj.length,
             type = typeOf(obj);
         if(isWindow(obj)) {
             return false;
         }
-        if ( obj.nodeType === 1 && length ) {
+        if(obj.nodeType === 1 && length) {
             return true;
         }
-
-        return type === "array" || type !== "function" &&
-            ( length === 0 ||
-            typeof length === "number" && length > 0 && ( length - 1 ) in obj );
-    }
-
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/isFinite
-    function isFinite(number) {
-
-    }
-
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/isNaN
-    function isNaN(number) {
-        return (typeOf(number) === 'number') && (number != +number);
+        return type === "array"
+            || type !== "function"
+            && ( length === 0
+                || typeof length === "number" && length > 0 && ( length - 1 ) in obj
+                );
     }
 
     function isObject(obj) {
@@ -96,14 +86,6 @@ define(function() {
         return (typeOf(elem) === 'dom') && (elem.nodeType === 1);
     }
 
-    function isNull(value) {
-        return value === null;
-    }
-
-    function isUndefined(value) {
-        return value === undefined;
-    }
-
     function isWindow(obj) {
         // should be eqeq; ie6 eqeqeq false
         return obj != null && obj == obj.window;
@@ -112,8 +94,10 @@ define(function() {
     return {
         typeOf: typeOf,
         isArray: isArray,
+        isArrayLike: isArrayLike,
         isObject: isObject,
         isPlainObject: isPlainObject,
+        isEmptyObject: isEmptyObject,
         isFunction: isFunction,
         isElement: isElement,
         isWindow: isWindow
