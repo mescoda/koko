@@ -1,4 +1,4 @@
-define(['koko/lang/type'], function(type) {
+define(function() {
     var json = {},
         object = {},
         array = {},
@@ -28,10 +28,6 @@ define(['koko/lang/type'], function(type) {
 
     // object
     object.keys = function(obj) {
-        if(!type.isObject(obj)) {
-            throw new TypeError('Object.keys called on non-object');
-            return [];
-        }
         if(Object.keys) {
             return Object.keys(obj);
         }
@@ -45,9 +41,9 @@ define(['koko/lang/type'], function(type) {
     };
 
     object.create = function(obj) {
-        function newObj() {}
-        newObj.prototype = obj;
-        return new newObj();
+        function F() {}
+        F.prototype = obj;
+        return new F();
     };
 
     object.getPrototypeOf = function(obj) {
@@ -89,7 +85,7 @@ define(['koko/lang/type'], function(type) {
 
     // string
     string.trim = function(str) {
-        var trimRegex = /^\s+|\s+$/g,
+        var trimRegex = /^[\s\xA0\u3000\uFEFF]+|[\s\xA0\u3000\uFEFF]+$/g,
             trimProto = stringPrototype.trim;
         if(trimProto) {
             return str == null ? '' : trimProto.call(str);
@@ -241,7 +237,11 @@ define(['koko/lang/type'], function(type) {
         object: object,
         array: array,
         fn: fn,
-        string: string
+        string: string,
+        trim: string.trim,
+        indexOf: array.indexOf,
+        filter: array.filter,
+        forEach: array.forEach,
+        bind: fn.bind
     };
-
 });
