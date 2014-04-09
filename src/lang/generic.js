@@ -2,7 +2,7 @@ define(['koko/lang/util'], function(util) {
     var object = {},
         array = {};
 
-    var uncurrying = util.fn.uncurrying;
+    var uncurrying = util.uncurrying;
 
     var toString = object.toString = uncurrying(Object.prototype.toString);
     var slice = array.slice = uncurrying(Array.prototype.slice);

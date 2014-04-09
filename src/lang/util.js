@@ -86,6 +86,9 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
         object: object,
         fn: fn,
         string: string,
-        extend: object.extend
+        extend: object.extend,
+        clone: object.clone,
+        uncurrying: fn.uncurrying,
+        currying: fn.currying
     };
 });
