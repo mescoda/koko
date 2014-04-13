@@ -4,7 +4,23 @@ define(function() {
         return (new RegExp("^[^\\x00-\\x20\\x7f\\(\\)<>@,;:\\\\\\\"\\[\\]\\?=\\{\\}\\/\\u0080-\\uffff]+\x24")).test(name);
     }
 
+    /**
+     * set cookie
+     * @param {String} name    cookie name
+     * @param {String} value   cookie value
+     * @param {Object} options cookie set options
+     */
     function set(name, value, options) {
+        /**
+         * [options description]
+         * @type {Object}
+         * @property {String} path cookie path
+         * @property {String} domain cookie domain
+         * @property {Number} maxDay cookie max day
+         * @property {Date} expires cookie expire GMTString
+         * @property {Number} max-age cookie max-age in seconds
+         * @property {Boolean} secure cookie to only be transmitted over secure protocol as https
+         */
         options = options || {};
 
         if(!isValidKey(name)) {
