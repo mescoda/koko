@@ -82,6 +82,10 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
         });
     };
 
+    string.escapeRegExp = function(str) {
+        return String(str).replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
+    };
+
     return {
         object: object,
         fn: fn,
@@ -89,6 +93,7 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
         extend: object.extend,
         clone: object.clone,
         uncurrying: fn.uncurrying,
-        currying: fn.currying
+        currying: fn.currying,
+        escapeRegExp: string.escapeRegExp
     };
 });
