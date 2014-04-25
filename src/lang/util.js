@@ -86,13 +86,17 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
         return String(str).replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
     };
 
-    string.camelCase = function(str) {
+    string.toCamelCase = function(str) {
         return String(str).replace(
             /-([\da-z])/gi,
             function (match, letter) {
                 return letter.toUpperCase();
             }
         );
+    };
+
+    string.toDash = function(str) {
+        return String(str).replace(/([A-Z])/g, '-$1').toLowerCase();
     };
 
     return {
@@ -104,6 +108,7 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
         uncurrying: fn.uncurrying,
         currying: fn.currying,
         escapeRegExp: string.escapeRegExp,
-        camelCase: string.camelCase
+        toCamelCase: string.toCamelCase,
+        toDash: string.toDash
     };
 });
