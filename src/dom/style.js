@@ -20,14 +20,6 @@ define(['koko/lang/util', 'koko/browser/support'], function(util, support) {
     }
 
     /**
-     * [isStrictMode description]
-     * @return {Boolean} [description]
-     */
-    function isStrictMode() {
-        return document.compatMode === 'CSS1Compat';
-    }
-
-    /**
      * get root
      * @inner
      * @param  {?HTMLElement} elem element needed if iframe
@@ -78,7 +70,7 @@ define(['koko/lang/util', 'koko/browser/support'], function(util, support) {
      * @return {Number} page width aka html document width
      */
     function getPageWidth() {
-        return Math.max(getCompatElement().scrollWidth, getViewWidth());
+        return Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, getViewWidth());
     }
 
     /**
@@ -86,7 +78,7 @@ define(['koko/lang/util', 'koko/browser/support'], function(util, support) {
      * @return {Number} page height aka html height
      */
     function getPageHeight() {
-        return Math.max(getCompatElement().scrollHeight, getViewHeight());
+        return Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, getViewHeight());
     }
 
     /**
@@ -175,7 +167,6 @@ define(['koko/lang/util', 'koko/browser/support'], function(util, support) {
     return {
         show: show,
         hide: hide,
-        isStrictMode: isStrictMode,
         getScrollLeft: getScrollLeft,
         getScrollTop: getScrollTop,
         getViewWidth: getViewWidth,
