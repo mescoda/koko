@@ -11,8 +11,8 @@ define(['koko/lang/type', 'koko/lang/es5', 'koko/lang/generic', 'koko/dom/classL
 
     /**
      * [q description]
-     * @param  {[type]} className [description]
-     * @param  {[type]} scope     [description]
+     * @param  {String} className [description]
+     * @param  {?HTMLElement} scope     [description]
      * @return {Array.<HTMLElement>}           matched elements array || empty array
      */
     function q(className, scope) {
@@ -75,7 +75,7 @@ define(['koko/lang/type', 'koko/lang/es5', 'koko/lang/generic', 'koko/dom/classL
 
     /**
      * [first description]
-     * @param  {[String|HTMLElement]} elem [description]
+     * @param  {[HTMLElement]} elem [description]
      * @return {HTMLElement|Null}      HTMLElement if found || null if not found
      */
     function first(elem) {

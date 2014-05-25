@@ -41,6 +41,14 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
         return obj;
     };
 
+    object.forIn = function(obj, iterator) {
+        for(var key in obj) {
+            if(Object.prototype.hasOwnProperty.call(obj, key)) {
+                iterator(obj[key], key);
+            }
+        }
+    }
+
     fn.uncurrying = function(fn) {
         return function() {
             return Function.call.apply(fn, arguments);
@@ -105,6 +113,7 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
         string: string,
         extend: object.extend,
         clone: object.clone,
+        forIn: object.forIn,
         uncurrying: fn.uncurrying,
         currying: fn.currying,
         escapeRegExp: string.escapeRegExp,

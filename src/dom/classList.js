@@ -1,4 +1,4 @@
-define(['koko/lang/es5'], function(_) {
+define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
 
     var hasClassList = 'classList' in document.documentElement;
 
@@ -28,6 +28,20 @@ define(['koko/lang/es5'], function(_) {
             }
         };
 
+    /**
+     * [addClasses description]
+     * @param {HTMLElement} elem       element
+     * @param {String|Array} classNames if string should be separate by space
+     */
+    function addClasses(elem, classNames) {
+        if(type.typeOf(classNames) === 'string') {
+            classNames = classNames.split(/\s+/) || [];
+        }
+        _.forEach(classNames, function(className) {
+            addClass(elem, className);
+        });
+    }
+
     var removeClass = hasClassList
         ? function(elem, className) {
             elem.classList.remove(className);
@@ -39,6 +53,20 @@ define(['koko/lang/es5'], function(_) {
             });
             elem.className = newClassList.join(' ');
         };
+
+    /**
+     * [removeClasses description]
+     * @param  {HTMLElement} elem       element
+     * @param  {String|Array} classNames if string: should be separate by space
+     */
+    function removeClasses(elem, classNames) {
+        if(type.typeOf(classNames) === 'string') {
+            classNames = classNames.split(/\s+/) || [];
+        }
+        _.forEach(classNames, function(className) {
+            removeClass(elem, className);
+        });
+    }
 
     var toggleClass = hasClassList
         ? function(elem, className) {
@@ -55,7 +83,9 @@ define(['koko/lang/es5'], function(_) {
     return {
         hasClass: hasClass,
         addClass: addClass,
+        addClasses: addClasses,
         removeClass: removeClass,
+        removeClasses: removeClasses,
         toggleClass: toggleClass
     };
 });

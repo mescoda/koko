@@ -240,6 +240,7 @@ define(function() {
         string: string,
         trim: string.trim,
         indexOf: array.indexOf,
+        lastIndexOf: array.lastIndexOf,
         filter: array.filter,
         forEach: array.forEach,
         bind: fn.bind
