@@ -1,16 +1,16 @@
 define(function() {
     function on(elem, type, listener) {
-        if(elem.addEventListener) {
+        if(elem && elem.addEventListener) {
             elem.addEventListener(type, listener, false);
-        } else if(elem.attachEvent) {
+        } else if(elem && elem.attachEvent) {
             elem.attachEvent('on' + type, listener);
         }
     }
 
     function off(elem, type, listener) {
-        if(elem.removeEventListener) {
+        if(elem && elem.removeEventListener) {
             elem.removeEventListener(type, listener, false);
-        } else if(elem.detachEvent) {
+        } else if(elem && elem.detachEvent) {
             elem.detachEvent('on' + type, listener);
         }
     }
