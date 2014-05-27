@@ -1,4 +1,4 @@
-define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
+define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, generic, _) {
     var object = {},
         array = {},
         fn = {},
@@ -29,37 +29,6 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
             }
         }
         return prev;
-    };
-
-    object.clone = function(obj) {
-        if(type.isArray(obj)) {
-            return obj.slice();
-        }
-        if(type.isPlainObject(obj)) {
-            return object.extend({}, obj);
-        }
-        return obj;
-    };
-
-    object.forIn = function(obj, iterator) {
-        for(var key in obj) {
-            if(Object.prototype.hasOwnProperty.call(obj, key)) {
-                iterator(obj[key], key);
-            }
-        }
-    }
-
-    fn.uncurrying = function(fn) {
-        return function() {
-            return Function.call.apply(fn, arguments);
-        };
-    };
-
-    fn.currying = function(fn) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return function() {
-            return fn.apply(this, args.concat(Array.prototype.slice.call(arguments)));
-        };
     };
 
     string.contains = function(source, searchString, seperator) {
@@ -107,17 +76,33 @@ define(['koko/lang/type', 'koko/lang/es5'], function(type, _) {
         return String(str).replace(/([A-Z])/g, '-$1').toLowerCase();
     };
 
+
+    /**
+     * [clone description]
+     * @param  {*} source can be String Number Array Object...
+     * @return {*}        cloned source
+     */
+    var clone = function(source) {
+        var result = source;
+        if(type.isArray(source)) {
+            result = source.slice();
+        } else if(type.isPlainObject(source)) {
+            result = {};
+            generic.forIn(source, function(value, key) {
+                result[key] = clone(value);
+            });
+        }
+        return result;
+    };
+
     return {
         object: object,
         fn: fn,
         string: string,
         extend: object.extend,
-        clone: object.clone,
-        forIn: object.forIn,
-        uncurrying: fn.uncurrying,
-        currying: fn.currying,
         escapeRegExp: string.escapeRegExp,
         toCamelCase: string.toCamelCase,
-        toDash: string.toDash
+        toDash: string.toDash,
+        clone: clone
     };
 });
