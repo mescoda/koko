@@ -88,7 +88,7 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
             result = source.slice();
         } else if(type.isPlainObject(source)) {
             result = {};
-            generic.forIn(source, function(value, key) {
+            generic.forInOwn(source, function(value, key) {
                 result[key] = clone(value);
             });
         }

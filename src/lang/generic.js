@@ -35,7 +35,7 @@ define(function() {
             'constructor'
         ];
 
-    object.forIn = function(obj, iterator) {
+    object.forInOwn = function(obj, iterator) {
         for(var key in obj) {
             if(object.hasOwnProperty(obj, key)) {
                 iterator(obj[key], key, obj);
@@ -44,7 +44,7 @@ define(function() {
         if(dontEnums) {
             for(var i = 0, iLen = dontEnums.length; i < iLen; i++) {
                 if(object.hasOwnProperty(obj, dontEnums[i])) {
-                    iterator(object[dontEnums[i]], dontEnums[i], obj);
+                    iterator(obj[dontEnums[i]], dontEnums[i], obj);
                 }
             }
         }
@@ -61,7 +61,7 @@ define(function() {
         uncurrying: fn.uncurrying,
         currying: fn.currying,
         hasOwnProperty: object.hasOwnProperty,
-        forIn: object.forIn,
+        forInOwn: object.forInOwn,
         toString: object.toString,
         slice: array.slice
     };
