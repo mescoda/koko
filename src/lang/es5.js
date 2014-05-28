@@ -1,4 +1,4 @@
-define(function() {
+define(['koko/lang/generic'], function(generic) {
     var json = {},
         object = {},
         array = {},
@@ -32,11 +32,9 @@ define(function() {
             return Object.keys(obj);
         }
         var keys = [];
-        for(var key in obj) {
-            if(obj.hasOwnProperty(key)) {
-                keys.push(key);
-            }
-        }
+        generic.forInOwn(obj, function(value, key) {
+            keys.push(key)
+        });
         return keys;
     };
 
