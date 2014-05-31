@@ -13,22 +13,61 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
         return values;
     };
 
-    object.extend = function(isDeep, prev, add) {
+    /**
+     * extend
+     * @ object.extend([isDeep], prev, add1[, addN] )
+     * @return {Object}         result
+     */
+    /**
+     * shallow extend without Bollean
+     * @param  {Object} isDeep the actual prev object
+     * @param  {Object}  prev   the to be add object1
+     * @param  {Object}  adds   the to be add object2
+     * @return {Object}         result
+     */
+    /**
+     * shallow extend with Bollean
+     * @param  {Boolean} isDeep should be false
+     * @param  {Object}  prev   the prev object
+     * @param  {Object}  adds   the to be add object1
+     * @return {Object}         result
+     */
+    /**
+     * deep extend
+     * @param  {Boolean} isDeep should be true
+     * @param  {Object}  prev   the prev object
+     * @param  {Object}  adds   the to be add object1
+     * @return {Object}         result
+     */
+    object.extend = function(isDeep, prev, adds) {
+        var i,
+            addNum = arguments.length,
+            prevInside,
+            isDeepInside;
         if(type.typeOf(isDeep) !== 'boolean') {
-            add = prev;
-            prev = isDeep;
-            isDeep = false;
+            i = 1;
+            prevInside = isDeep;
+            isDeepInside = false;
+        } else {
+            i = 2;
+            prevInside = prev;
+            isDeepInside = isDeep;
         }
-        for(var key in add) {
-            if(add.hasOwnProperty(key)) {
-                if(isDeep && type.isPlainObject(prev[key])) {
-                    object.extend(prev[key], add[key]);
-                } else {
-                    prev[key] = add[key];
-                }
+        for(; i < addNum; i++) {
+            var obj = arguments[i];
+            if(obj) {
+                generic.forInOwn(obj, function(value, key) {
+                    if(value !== prevInside) {
+                        if(isDeepInside && type.isPlainObject(value) && type.isPlainObject(prevInside[key])) {
+                            object.extend(isDeepInside, prevInside[key], value);
+                        } else {
+                            prevInside[key] = value;
+                        }
+                    }
+                });
             }
         }
-        return prev;
+        return prevInside;
     };
 
     string.contains = function(source, searchString, seperator) {
