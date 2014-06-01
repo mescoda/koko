@@ -118,21 +118,109 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
 
     /**
      * [clone description]
-     * @param  {*} source can be String Number Array Object...
-     * @return {*}        cloned source
+     * @param  {Object(plainObject)|Array|RegExp|Date|String|Number|Boolean|HTMLElement} source [description]
+     * @description cannot clone {Error|Function|Null|Undefined|objects created with custom constructor}
+     * @return {Object(plainObject)|Array|RegExp|Date|String|Number|Boolean|HTMLElement}        [description]
      */
-    var clone = function(source) {
-        var result = source;
-        if(type.isArray(source)) {
-            result = source.slice();
-        } else if(type.isPlainObject(source)) {
-            result = {};
-            generic.forInOwn(source, function(value, key) {
-                result[key] = clone(value);
+    function clone(source) {
+        switch(type.typeOf(source)) {
+            case 'object':
+                return cloneObject(true, source);
+            case 'array':
+                return cloneArray(true, source);
+            case 'regexp':
+                return cloneRegExp(source);
+            case 'date':
+                return cloneDate(source);
+            case 'dom':
+                return source.cloneNode(true);
+            default:
+                return source;
+        }
+    }
+
+    /**
+     * [cloneObject description]
+     * cloneObject([isDeep], obj)
+     * @param  {Boolean|Object} isDeep [description]
+     * @param  {?Object}  obj    [description]
+     * @return {Object}         [description]
+     */
+    function cloneObject(isDeep, obj) {
+        var result = {},
+            isDeepInside,
+            objInside;
+        if(type.typeOf(isDeep) !== 'boolean') {
+            isDeepInside = false;
+            objInside = isDeep;
+        } else {
+            isDeepInside = isDeep;
+            objInside = obj;
+        }
+        if(type.isPlainObject(objInside)) {
+            if(isDeepInside) {
+                generic.forInOwn(objInside, function(value, key) {
+                    result[key] = clone(value);
+                });
+            } else {
+                generic.forInOwn(objInside, function(value, key) {
+                    result[key] = value;
+                });
+            }
+            return result;
+        }
+        return objInside;
+    }
+
+    /**
+     * [cloneArray description]
+     * cloneArray([isDeep], arr)
+     * @param  {Boolean|Array} isDeep [description]
+     * @param  {?Array}  arr    [description]
+     * @return {Array}         [description]
+     */
+    function cloneArray(isDeep, arr) {
+        var result = [],
+            isDeepInside,
+            arrInside;
+        if(type.typeOf(isDeep) !== 'boolean') {
+            isDeepInside = false;
+            arrInside = isDeep;
+        } else {
+            isDeepInside = isDeep;
+            arrInside = arr;
+        }
+        if(isDeepInside) {
+            _.forEach(arrInside, function(item, index) {
+                result[index] = clone(item);
             });
+        } else {
+            result = arrInside.slice();
         }
         return result;
-    };
+    }
+
+    /**
+     * [cloneRegExp description]
+     * @param  {RegExp} regexp [description]
+     * @return {RegExp}        [description]
+     */
+    function cloneRegExp(regexp) {
+        var flags = '';
+        flags += regexp.multiline ? 'm' : '';
+        flags += regexp.global ? 'g' : '';
+        flags += regexp.ignorecase ? 'i' : '';
+        return new RegExp(regexp.source, flags);
+    }
+
+    /**
+     * [cloneDate description]
+     * @param  {Date} date [description]
+     * @return {Date}      [description]
+     */
+    function cloneDate(date) {
+        return new Date(+date);
+    }
 
     return {
         object: object,
