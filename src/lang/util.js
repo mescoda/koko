@@ -133,7 +133,7 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
             case 'date':
                 return cloneDate(source);
             case 'dom':
-                return source.cloneNode(true);
+                return source.cloneNode();
             default:
                 return source;
         }
