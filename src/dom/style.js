@@ -1,4 +1,4 @@
-define(['koko/lang/util', 'koko/browser/support'], function(util, support) {
+define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function(generic, util, support) {
 
     /**
      * show element
@@ -157,11 +157,9 @@ define(['koko/lang/util', 'koko/browser/support'], function(util, support) {
      * @param {Object} properties css key-value object, for key: both dash and camelCase are ok
      */
     function setStyles(elem, properties) {
-        for(var key in properties) {
-            if(properties.hasOwnProperty(key)) {
-                elem.style[util.toCamelCase(key)] = properties[key];
-            }
-        }
+        generic.forInOwn(properties, function(value, key) {
+            elem.style[util.toCamelCase(key)] = value;
+        });
     }
 
     return {
