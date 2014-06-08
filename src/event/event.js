@@ -48,6 +48,11 @@ define(['koko/dom/style'], function(domS) {
         }
     }
 
+    /**
+     * [getClientX description]
+     * @param  {Event} e event
+     * @return {Number}   clientX
+     */
     function getClientX(e) {
         var clientX = e.clientX;
         if(clientX || clientX === 0) {
@@ -56,6 +61,11 @@ define(['koko/dom/style'], function(domS) {
         return clientX;
     }
 
+    /**
+     * [getClientY description]
+     * @param  {Event} e event
+     * @return {Number}   clientY
+     */
     function getClientY(e) {
         var clientY = e.clientY;
         if(clientY || clientY === 0) {
@@ -64,6 +74,11 @@ define(['koko/dom/style'], function(domS) {
         return clientY;
     }
 
+    /**
+     * [getPageX description]
+     * @param  {Event} e event
+     * @return {Number}   pageX
+     */
     function getPageX(e) {
         var pageX = e.pageX;
         if(!pageX && pageX !== 0) {
@@ -72,6 +87,11 @@ define(['koko/dom/style'], function(domS) {
         return pageX;
     }
 
+    /**
+     * [getPageY description]
+     * @param  {Event} e event
+     * @return {Number}   pageY
+     */
     function getPageY(e) {
         var pageY = e.pageY;
         if(!pageY && pageY !== 0) {
