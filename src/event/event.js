@@ -1,4 +1,4 @@
-define(function() {
+define(['koko/dom/style'], function(domS) {
     function on(elem, type, listener) {
         if(elem && elem.addEventListener) {
             elem.addEventListener(type, listener, false);
@@ -48,12 +48,48 @@ define(function() {
         }
     }
 
+    function getClientX(e) {
+        var clientX = e.clientX;
+        if(clientX || clientX === 0) {
+            clientX -= domS.getCompatElement().clientLeft
+        }
+        return clientX;
+    }
+
+    function getClientY(e) {
+        var clientY = e.clientY;
+        if(clientY || clientY === 0) {
+            clientY -= domS.getCompatElement().clientTop
+        }
+        return clientY;
+    }
+
+    function getPageX(e) {
+        var pageX = e.pageX;
+        if(!pageX && pageX !== 0) {
+            pageX = getClientX(e) + domS.getCompatElement().scrollLeft;
+        }
+        return pageX;
+    }
+
+    function getPageY(e) {
+        var pageY = e.pageY;
+        if(!pageY && pageY !== 0) {
+            pageY = getClientY(e) + domS.getCompatElement().scrollTop;
+        }
+        return pageY;
+    }
+
     return {
         on: on,
         off: off,
         emit: emit,
         getTarget: getTarget,
         preventDefault: preventDefault,
-        stopPropagation: stopPropagation
+        stopPropagation: stopPropagation,
+        getClientX: getClientX,
+        getClientY: getClientY,
+        getPageX: getPageX,
+        getPageY: getPageY
     };
 });

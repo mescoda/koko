@@ -165,6 +165,7 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
     return {
         show: show,
         hide: hide,
+        getCompatElement: getCompatElement,
         getScrollLeft: getScrollLeft,
         getScrollTop: getScrollTop,
         getViewWidth: getViewWidth,
