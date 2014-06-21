@@ -27,14 +27,14 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
      */
     /**
      * shallow extend with Bollean
-     * @param  {Boolean} isDeep should be false
+     * @param  {boolean} isDeep should be false
      * @param  {Object}  prev   the prev object
      * @param  {Object}  adds   the to be add object1
      * @return {Object}         result
      */
     /**
      * deep extend
-     * @param  {Boolean} isDeep should be true
+     * @param  {boolean} isDeep should be true
      * @param  {Object}  prev   the prev object
      * @param  {Object}  adds   the to be add object1
      * @return {Object}         result
@@ -115,6 +115,36 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
         return String(str).replace(/([A-Z])/g, '-$1').toLowerCase();
     };
 
+    /**
+     * pad source with leading character
+     *
+     * @method pad
+     * @param  {(string|number)} source [description]
+     * @param  {number} width [description]
+     * @param  {string} leading [description]
+     * @return {string} [description]
+     */
+    string.pad = function(source, width, leading) {
+        var str = String(source);
+        return str.length > width
+                ? str
+                : new Array(width - str.length + 1).join(leading) + str;
+    };
+
+    /**
+     * pad number with leading zeros
+     *
+     * @method padZero
+     * @param  {(string|number)} source [description]
+     * @param  {number} width [description]
+     * @return {string} [description]
+     */
+    string.padZero = function(source, width) {
+        var str = String(Math.abs(source | 0));
+        return (source < 0 ? '-' : '')
+            + string.pad(str, width, '0');
+    };
+
 
     /**
      * [clone description]
@@ -175,7 +205,7 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
     /**
      * [cloneArray description]
      * cloneArray([isDeep], arr)
-     * @param  {Boolean|Array} isDeep [description]
+     * @param  {boolean|Array} isDeep [description]
      * @param  {?Array}  arr    [description]
      * @return {Array}         [description]
      */
@@ -230,6 +260,7 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
         escapeRegExp: string.escapeRegExp,
         toCamelCase: string.toCamelCase,
         toDash: string.toDash,
-        clone: clone
+        clone: clone,
+        padZero: string.padZero
     };
 });
