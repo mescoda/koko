@@ -14,21 +14,44 @@ define(function() {
      * @param  {Function} fn function to be uncurrying
      * @return {Function}      function after uncurrying
      */
-    fn.uncurrying = function(fn) {
+    fn.uncurrying = function(func) {
         return function() {
-            return Function.call.apply(fn, arguments);
+            return Function.call.apply(func, arguments);
         };
     };
 
+
     /**
-     * [currying description]
+     * [simpleCurrying description]
+     *
+     * @method simpleCurrying
      * @param  {Function} fn function to be currying
-     * @return {Function}      function after currying
+     * @return {Function} function after currying
      */
-    fn.currying = function(fn) {
+    fn.simpleCurrying = function(func) {
         var args = slicePrototype.call(arguments, 1);
         return function() {
-            return fn.apply(this, args.concat(slicePrototype.call(arguments)));
+            return func.apply(this, args.concat(slicePrototype.call(arguments)));
+        };
+    };
+
+
+    /**
+     * [currying description]
+     *
+     * @method currying
+     * @param  {Function} fn function to be currying
+     * @return {Function} function after currying
+     */
+    fn.currying = function(func) {
+        var receivedArgs = slicePrototype.call(arguments, 1);
+        return function() {
+            var args = receivedArgs.concat(slicePrototype.call(arguments));
+            if (args < func.length) {
+                return fn.currying(func, args)
+            } else {
+                return func.apply(this, args);
+            }
         };
     };
 
