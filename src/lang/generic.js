@@ -16,7 +16,7 @@ define(function() {
      */
     fn.uncurrying = function(func) {
         return function() {
-            return Function.call.apply(func, arguments);
+            return Function.prototype.call.apply(func, arguments);
         };
     };
 
