@@ -91,6 +91,10 @@ define(function() {
         return obj != null && obj == obj.window;
     }
 
+    function isUndefined(target) {
+        return target === void 0;
+    }
+
     return {
         typeOf: typeOf,
         isArray: isArray,
@@ -100,6 +104,7 @@ define(function() {
         isEmptyObject: isEmptyObject,
         isFunction: isFunction,
         isElement: isElement,
-        isWindow: isWindow
+        isWindow: isWindow,
+        isUndefined: isUndefined
     };
 });

@@ -1,11 +1,11 @@
-define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function (generic, util, support) {
+define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function (type, generic, util, support) {
 
     /**
      * show element
      *
      * @method show
-     * @param  {HTMLElement} elem element
-     * @param  {?string=} value value for display if needed such as block or inline-block
+     * @param {HTMLElement} elem element
+     * @param {?string=} value value for display if needed such as block or inline-block
      * @return {HTMLElement} element
      */
     function show(elem, value) {
@@ -17,7 +17,7 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
      * hide element
      *
      * @method hide
-     * @param  {HTMLElement} elem element
+     * @param {HTMLElement} elem element
      * @return {HTMLElement} element
      */
     function hide(elem) {
@@ -29,7 +29,7 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
      * get root
      *
      * @method getCompatElement
-     * @param  {?HTMLElement=} elem element needed if iframe
+     * @param {?HTMLElement=} elem element needed if iframe
      * @return {HTMLElement} root element: document.documentElement for Strict mode, document.body for Quirks mode
      */
     function getCompatElement(elem) {
@@ -41,23 +41,77 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
     }
 
     /**
-     * getScrollLeft
+     * getScrollLeft of document(elem param is window or document) or element
      *
      * @method getScrollLeft
-     * @return {number} return the number of pixels that document has been scrolled horizontally
+     * @param {HTMLElement=} elem window or document or element node
+     * @return {number} return the number of pixels that document or element has been scrolled horizontally
      */
-    function getScrollLeft() {
-        return 'pageXOffset' in window ? window.pageXOffset : getCompatElement().scrollLeft;
+    function getScrollLeft(elem) {
+        if (type.isWindow(elem) || type.isUndefined(elem) || elem.nodeType === 9) {
+            return 'pageXOffset' in window ? window.pageXOffset : getCompatElement().scrollLeft;
+        } else {
+            return elem.scrollLeft;
+        }
     }
 
     /**
-     * getScrollTop
+     * getScrollTop of document(elem param is window or document) or element
      *
      * @method getScrollTop
-     * @return {number} return the number of pixels that document has been scrolled vertically
+     * @param {HTMLElement=} elem window or document or element node
+     * @return {number} return the number of pixels that document or element has been scrolled vertically
      */
-    function getScrollTop() {
-        return 'pageYOffset' in window ? window.pageYOffset : getCompatElement().scrollTop();
+    function getScrollTop(elem) {
+        if (type.isWindow(elem) || type.isUndefined(elem) || elem.nodeType === 9) {
+            return 'pageYOffset' in window ? window.pageYOffset : getCompatElement().scrollTop;
+        } else {
+            return elem.scrollTop;
+        }
+    }
+
+    /**
+     * set scrollLeft to document or element
+     *
+     * @method setScrollLeft
+     * @param {HTMLElement=} elem element
+     * @param {number} value
+     * @return {HTMLElement} window or target element
+     */
+    function setScrollLeft(elem, value) {
+        if (type.typeOf(elem) === 'number') {
+            value = elem;
+            elem = window;
+        }
+        if (type.isWindow(elem) || elem.nodeType === 9) {
+            window.scrollTo(value, getScrollTop());
+            return window;
+        } else {
+            elem.scrollLeft = value;
+            return elem;
+        }
+    }
+
+    /**
+     * set scrollTop to document or element
+     *
+     * @method setScrollTop
+     * @param {HTMLElement=} elem element
+     * @param {number} value
+     * @return {HTMLElement} window or target element
+     */
+    function setScrollTop(elem, value) {
+        if (type.typeOf(elem) === 'number') {
+            value = elem;
+            elem = window;
+        }
+        if (type.isWindow(elem) || elem.nodeType === 9) {
+            window.scrollTo(getScrollLeft(), value);
+            return window;
+        } else {
+            elem.scrollTop = value;
+            return elem;
+        }
     }
 
     /**
@@ -105,7 +159,7 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
      * get the element coordinates relative to viewport
      *
      * @method getPositionInViewport
-     * @param  {HTMLElement} elem element
+     * @param {HTMLElement} elem element
      * @return {Object} {top: {number}, left: {number}}
      */
     function getPositionInViewport(elem) {
@@ -122,7 +176,7 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
      * get the element coordinates relative to document
      *
      * @method getPositionInDocument
-     * @param  {HTMLElement} elem element
+     * @param {HTMLElement} elem element
      * @return {Object} {top: number, left: number}
      */
     function getPositionInDocument(elem) {
@@ -153,8 +207,8 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
      * getStyle
      *
      * @method getStyle
-     * @param  {HTMLElement} elem element
-     * @param  {string} key key  css key string, both dash and camelCase are ok. for float: float
+     * @param {HTMLElement} elem element
+     * @param {string} key key  css key string, both dash and camelCase are ok. for float: float
      * @return {string} css value
      */
     function getStyle(elem, key) {
@@ -182,8 +236,8 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
      * setStyles
      *
      * @method setStyles
-     * @param  {HTMLElement} elem element
-     * @param  {Object} properties properties css key-value object, for key: both dash and camelCase are ok
+     * @param {HTMLElement} elem element
+     * @param {Object} properties properties css key-value object, for key: both dash and camelCase are ok
      */
     function setStyles(elem, properties) {
         generic.forInOwn(properties, function (value, key) {
@@ -197,6 +251,8 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
         getCompatElement: getCompatElement,
         getScrollLeft: getScrollLeft,
         getScrollTop: getScrollTop,
+        setScrollLeft: setScrollLeft,
+        setScrollTop: setScrollTop,
         getViewWidth: getViewWidth,
         getViewHeight: getViewHeight,
         getPageWidth: getPageWidth,
