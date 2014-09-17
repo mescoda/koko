@@ -47,7 +47,7 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
      * @return {number} return the number of pixels that document has been scrolled horizontally
      */
     function getScrollLeft() {
-        return window.pageXOffset || getCompatElement().scrollLeft;
+        return 'pageXOffset' in window ? window.pageXOffset : getCompatElement().scrollLeft;
     }
 
     /**
@@ -57,7 +57,7 @@ define(['koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function
      * @return {number} return the number of pixels that document has been scrolled vertically
      */
     function getScrollTop() {
-        return window.pageYOffset || getCompatElement().scrollTop;
+        return 'pageYOffset' in window ? window.pageYOffset : getCompatElement().scrollTop();
     }
 
     /**
