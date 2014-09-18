@@ -1,6 +1,53 @@
 define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/util', 'koko/browser/support'], function (type, generic, util, support) {
 
     /**
+     * check if an element is hidden or not
+     *
+     * @method isHidden
+     * @param {HTMLElement} elem element
+     * @return {boolean} check result
+     */
+    function isHidden(elem) {
+        return getStyle(elem, 'display') === 'none';
+        // TODO: util.contains
+    }
+
+    /*
+    HACK: body: 'block' to fix getDefaultDisplay('body') === 'none'
+     */
+    var defaultDisplay = {
+        body: 'block'
+    };
+
+    /**
+     * get element's default display value
+     *
+     * @method getDefaultDisplay
+     * @param {string} nodeName nodeName
+     * @return {string} display value
+     */
+    function getDefaultDisplay(nodeName) {
+        nodeName = nodeName.toLowerCase();
+        var display = defaultDisplay[nodeName];
+        if (!display) {
+            var temp = document.createElement(nodeName);
+            document.body.appendChild(temp);
+            var style;
+            display = ( window.getDefaultComputedStyle && ( style = window.getDefaultComputedStyle(temp) ) )
+                ? style.display
+                : getStyle(temp, 'display');
+            temp.parentNode.removeChild(temp);
+
+            /*if (display === 'none') {
+                // TODO: iframe check
+            }*/
+
+            defaultDisplay[nodeName] = display;
+        }
+        return display;
+    }
+
+    /**
      * show element
      *
      * @method show
@@ -9,7 +56,12 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/util', 'koko/browser/s
      * @return {HTMLElement} element
      */
     function show(elem, value) {
-        elem.style.display = value || '';
+        if (elem.style.display === 'none') {
+            elem.style.display = '';
+        }
+        if (isHidden(elem)) {
+            elem.style.display = getDefaultDisplay(elem.nodeName);
+        }
         return elem;
     }
 
