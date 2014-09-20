@@ -194,7 +194,10 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/util', 'koko/browser/s
      * @return {number} page width aka html document width
      */
     function getPageWidth() {
-        return Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, getViewWidth());
+        return Math.max(
+            document.documentElement.scrollWidth, document.body.scrollWidth,
+            getViewWidth()
+        );
     }
 
     /**
@@ -204,7 +207,10 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/util', 'koko/browser/s
      * @return {number} page height aka html height
      */
     function getPageHeight() {
-        return Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, getViewHeight());
+        return Math.max(
+            document.documentElement.scrollHeight, document.body.scrollHeight,
+            getViewHeight()
+        );
     }
 
     /**
@@ -229,7 +235,7 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/util', 'koko/browser/s
      *
      * @method getPositionInDocument
      * @param {HTMLElement} elem element
-     * @return {Object} {top: number, left: number}
+     * @return {Object} {top: {number}, left: {number}}
      */
     function getPositionInDocument(elem) {
         var scrollTop = getScrollTop(),
@@ -238,6 +244,57 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/util', 'koko/browser/s
         return {
             top: positionInViewport.top + scrollTop,
             left: positionInViewport.left + scrollLeft
+        };
+    }
+
+    /**
+     * get element's position parent same as offsetParent in jQuery
+     * for position: absolute return the latest position: relative|absolute|fixed
+     * for position: fixed return document.documentElement aka <html>
+     * for other elements return document.documentElement aka <html>
+     *
+     * @method getOffsetParent
+     * @param {HTMLElement} elem element
+     * @return {HTMLElement} parent
+     */
+    function getOffsetParent(elem) {
+        var documentElement = window.document.documentElement;
+        var positionParent = elem.offsetParent || documentElement;
+        while (positionParent && positionParent.nodeName.toLowercase() !== 'html' && getStyle(positionParent, 'position') === 'static') {
+            positionParent = positionParent.offsetParent;
+        }
+        return positionParent || documentElement;
+    }
+
+    /**
+     * get position relative to the result of getOffsetParent(elem)
+     *
+     * @method getPositionToOffsetParent
+     * @param {HTMLElement} elem element
+     * @return {Object} {top: {number}, left: {number}}
+     */
+    function getPositionToOffsetParent(elem) {
+        var offset;
+        var parentOffset = {
+            top: 0,
+            left: 0
+        };
+        if (getStyle(elem, 'position') === 'fixed') {
+            offset = elem.getBoundingClientRect();
+        } else {
+            var offsetParent = getOffsetParent(elem);
+            offset = getPositionInDocument(elem);
+
+            if (offsetParent.nodeName.toLowerCase() !== 'html') {
+                parentOffset = getPositionInDocument(offsetParent);
+            }
+
+            parentOffset.top += getStyle(offsetParent, 'borderTopWidth');
+            parentOffset.left += getStyle(offsetParent, 'borderLeftWidth');
+        }
+        return {
+            top: offset.top - parentOffset.top - getStyle(elem, 'marginTop'),
+            left: offset.left - parentOffset.left - getStyle(elem, 'marginLeft')
         };
     }
 
@@ -295,6 +352,49 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/util', 'koko/browser/s
         generic.forInOwn(properties, function (value, key) {
             elem.style[util.toCamelCase(key)] = value;
         });
+    }
+
+
+    /**
+     * get width of element
+     * for window return viewport width
+     * for document return page width
+     *
+     * @method getWidth
+     * @param {HTMLElement} elem element
+     * @return {number} width number
+     */
+    function getWidth(elem) {
+        if (type.isWindow(elem)) {
+            return getViewWidth();
+        }
+
+        if (elem.nodeType === 9) {
+            return getPageWidth();
+        }
+
+        return getStyle(elem, 'width');
+    }
+
+    /**
+     * get height of element
+     * for window return viewport height
+     * for document return page height
+     *
+     * @method getHeight
+     * @param {HTMLElement} elem element
+     * @return {number} height number
+     */
+    function getHeight(elem) {
+        if (type.isWindow(elem)) {
+            return getViewHeight();
+        }
+
+        if (elem.nodeType === 9) {
+            return getPageHeight();
+        }
+
+        return getStyle(elem, 'height');
     }
 
     return {
