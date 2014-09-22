@@ -111,6 +111,22 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
         );
     };
 
+    /**
+     * convert to pascal case
+     *
+     * @method toPascalCase
+     * @param {string} str
+     * @return {string} result
+     */
+    string.toPascalCase =  function (str) {
+        return string.toCamelCase(str).replace(
+            /^[a-z]/,
+            function (match) {
+                return match.toUpperCase();
+            }
+        );
+    };
+
     string.toDash = function(str) {
         return String(str).replace(/([A-Z])/g, '-$1').toLowerCase();
     };
@@ -259,6 +275,7 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
         extend: object.extend,
         escapeRegExp: string.escapeRegExp,
         toCamelCase: string.toCamelCase,
+        toPascalCase: string.toPascalCase,
         toDash: string.toDash,
         clone: clone,
         padZero: string.padZero
