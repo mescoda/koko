@@ -95,6 +95,10 @@ define(function() {
         return target === void 0;
     }
 
+    function isNumeric(target) {
+        return !isArray(target) && target - parseFloat(target) >= 0;
+    }
+
     return {
         typeOf: typeOf,
         isArray: isArray,
@@ -105,6 +109,7 @@ define(function() {
         isFunction: isFunction,
         isElement: isElement,
         isWindow: isWindow,
-        isUndefined: isUndefined
+        isUndefined: isUndefined,
+        isNumeric: isNumeric
     };
 });
