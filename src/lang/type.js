@@ -127,6 +127,8 @@ define(function (require) {
             return false;
         }
 
+        // to enhance the speed of for in
+        // own properties will be looped first, so if last one is own, all is own
         for (var key in source) {}
         return key === undefined || hasOwnProperty.call(source, key);
     };
@@ -178,6 +180,7 @@ define(function (require) {
     exports.isNumeric = function (source) {
         return !exports.isArray(source) && source - parseFloat(source) >= 0;
     };
+
 
     return exports;
 });
