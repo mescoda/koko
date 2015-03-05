@@ -24,12 +24,12 @@ define(function (require) {
      * @return {string} result
      */
     exports.typeOf = function (source) {
-        /* jshint ignore:start */
+        /* jshint eqeqeq: false */
         if (source == null) {
+        /* jshint eqeqeq: true */
             // null or undefined
             return String(source);
         }
-        /* jshint ignore:end */
 
         if (typeof source === 'object' && 'nodeType' in source) {
             return 'dom';
@@ -63,10 +63,10 @@ define(function (require) {
      * @return {boolean} result
      */
     exports.isWindow = function (source) {
-        /* jshint ignore:start */
         // should use eqeq; eqeqeq would be false in ie6
+        /* jshint eqeqeq: false */
         return source != null && source == source.window;
-        /* jshint ignore:end */
+        /* jshint eqeqeq: true */
     };
 
 

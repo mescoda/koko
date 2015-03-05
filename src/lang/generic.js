@@ -35,6 +35,7 @@ define(function (require) {
         };
     };
 
+
     /**
      * simpleCurrying
      *

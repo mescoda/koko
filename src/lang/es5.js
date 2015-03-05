@@ -116,14 +116,17 @@ define(function (require) {
      * @return {string} string after being trimed
      */
     exports.trim = exports.string.trim = function (str) {
-        var trimRegex = /^[\s\xA0\u3000\uFEFF]+|[\s\xA0\u3000\uFEFF]+$/g;
         var trimProto = stringPrototype.trim;
 
-        if (trimProto) {
-            return str == null ? '' : trimProto.call(str);
+        /* jshint eqeqeq: false */
+        if (str == null) {
+        /* jshint eqeqeq: true */
+            return '';
         }
 
-        return str == null ? '' : String(str).replace(trimRegex, '');
+        var trimRegex = /^[\s\xA0\u3000\uFEFF]+|[\s\xA0\u3000\uFEFF]+$/g;
+
+        return trimProto ? trimProto.call(str) : String(str).replace(trimRegex, '');
     };
 
 
@@ -138,8 +141,12 @@ define(function (require) {
      */
     exports.indexOf = exports.array.indexOf = function (array, item, fromIndex) {
         var indexOfProto = arrayPrototype.indexOf;
-        var length = array.length;
 
+        if (indexOfProto) {
+            return indexOfProto.call(array, item, fromIndex);
+        }
+
+        var length = array.length;
         if (length === 0) {
             return -1;
         }
@@ -147,10 +154,6 @@ define(function (require) {
         fromIndex = +fromIndex || 0;
 
         var i = fromIndex < 0 ? Math.max(0, fromIndex + length) : fromIndex;
-
-        if (indexOfProto) {
-            return indexOfProto.call(array, item, i);
-        }
 
         for (; i < length; i++) {
             if (i in array && array[i] === item) {
