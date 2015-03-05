@@ -1,74 +1,85 @@
-define(function() {
-    var fn = {},
-        object = {},
-        array = {},
-        string = {};
+define(function (require) {
+    'use strict';
 
-    var hasOwnPropertyPrototype = Object.prototype.hasOwnProperty,
-        slicePrototype = Array.prototype.slice,
-        toStringPrototype = Object.prototype.toString;
+    /**
+     * generic functions of koko
+     *
+     * @exports generic
+     */
+    var exports = {};
+
+    exports.fn = {};
+    exports.object = {};
+    exports.array = {};
+
+    var hasOwnPropertyPrototype = Object.prototype.hasOwnProperty;
+    var slicePrototype = Array.prototype.slice;
+    var toStringPrototype = Object.prototype.toString;
 
 
     /**
-     * [uncurrying description]
-     * @param  {Function} fn function to be uncurrying
-     * @return {Function}      function after uncurrying
+     * currying
+     *
+     * @method currying
+     * @param {Function} func function to be curryinged
+     * @return {Function} function after being curryinged
      */
-    fn.uncurrying = function(func) {
-        return function() {
-            return Function.prototype.call.apply(func, arguments);
+    exports.currying = exports.fn.currying = function (func) {
+        var receivedArgs = slicePrototype.call(arguments, 1);
+        return function () {
+            var args = receivedArgs.concat(slicePrototype.call(arguments));
+            if (args < func.length) {
+                return exports.currying(func, args);
+            }
+            return func.apply(this, args);
         };
     };
 
-
     /**
-     * [simpleCurrying description]
+     * simpleCurrying
      *
      * @method simpleCurrying
-     * @param  {Function} fn function to be currying
-     * @return {Function} function after currying
+     * @param {Function} func function to be curryinged
+     * @return {Function} function after being curryinged
      */
-    fn.simpleCurrying = function(func) {
+    exports.simpleCurrying = exports.fn.simpleCurrying = function (func) {
         var args = slicePrototype.call(arguments, 1);
-        return function() {
+        return function () {
             return func.apply(this, args.concat(slicePrototype.call(arguments)));
         };
     };
 
 
     /**
-     * [currying description]
+     * uncurrying
      *
-     * @method currying
-     * @param  {Function} fn function to be currying
-     * @return {Function} function after currying
+     * @method uncurrying
+     * @param {Function} func funciton to be uncurryinged
+     * @return {Function} function after being uncurryinged
      */
-    fn.currying = function(func) {
-        var receivedArgs = slicePrototype.call(arguments, 1);
-        return function() {
-            var args = receivedArgs.concat(slicePrototype.call(arguments));
-            if (args < func.length) {
-                return fn.currying(func, args)
-            } else {
-                return func.apply(this, args);
-            }
+    exports.uncurrying = exports.fn.uncurrying = function (func) {
+        return function () {
+            return Function.prototype.call.apply(func, arguments);
         };
     };
 
 
     /**
-     * [hasOwnProperty description]
+     * hasOwnProperty
+     *
+     * @method hasOwnProperty
+     * @example object.hasOwnProperty({foo: 'bar'}, 'foo');
      * @param {Object} obj object to be checked
-     * @param {String} key key to be checked
-     * @return {Boolean} if key is own or not
-     * @demo    object.hasOwnProperty({foo: 'bar'}, 'foo')
-     * @sameas Object.prototype.hasOwnProperty.call({foo: 'bar'}, 'foo')
+     * @param {string} key key to be checked
+     * @return {boolean} if key is obj's own property or not
      */
-    object.hasOwnProperty = fn.uncurrying(hasOwnPropertyPrototype);
+    exports.hasOwnProperty = exports.object.hasOwnProperty = exports.uncurrying(hasOwnPropertyPrototype);
+
 
     /**
      * check IE<9 dontEnums bug
-     * @type {Null|Array}
+     *
+     * @type {?Array.<string>}
      */
     var dontEnums = {toString: null}.propertyIsEnumerable('toString')
         ? null
@@ -83,52 +94,49 @@ define(function() {
         ];
 
     /**
-     * [forInOwn description]
-     * @param  {Object} obj      object to be looped
-     * @param  {Function} iterator iterator fn
+     * forInOwn
+     *
+     * @method forInOwn
+     * @param {Object} obj object to be looped
+     * @param {Function} fn iterator function
      */
-    object.forInOwn = function(obj, iterator) {
-        for(var key in obj) {
-            if(object.hasOwnProperty(obj, key)) {
-                iterator(obj[key], key, obj);
+    exports.forInOwn = exports.object.forInOwn = function (obj, fn) {
+        for (var key in obj) {
+            if (exports.hasOwnProperty(obj, key)) {
+                fn(obj[key], key, obj);
             }
         }
-        if(dontEnums) {
-            for(var i = 0, iLen = dontEnums.length; i < iLen; i++) {
-                if(object.hasOwnProperty(obj, dontEnums[i])) {
-                    iterator(obj[dontEnums[i]], dontEnums[i], obj);
+        if (dontEnums) {
+            for (var i = 0, iLen = dontEnums.length; i < iLen; i++) {
+                if (exports.hasOwnProperty(obj, dontEnums[i])) {
+                    fn(obj[dontEnums[i]], dontEnums[i], obj);
                 }
             }
         }
     };
 
-    /**
-     * [toString description]
-     * @param {*} obj [description]
-     * @return {String}
-     * @demo object.toString(source)
-     * @sameas Object.prototype.toString.call(source)
-     */
-    object.toString = fn.uncurrying(toStringPrototype);
-
 
     /**
-     * [slice description]
-     * @param {Array} arr [description]
-     * @return {Array}
-     * @demo array.slice([1, 2])
-     * @sameas Array.prototype.slice.call([1, 2])
+     * toString
+     *
+     * @method toString
+     * @example object.toString(source);
+     * @param {*} source target to be toStringed
+     * @return {string} target after being toStringed
      */
-    array.slice = fn.uncurrying(slicePrototype);
+    exports.toString = exports.object.toString = exports.uncurrying(toStringPrototype);
 
-    return {
-        object: object,
-        fn: fn,
-        uncurrying: fn.uncurrying,
-        currying: fn.currying,
-        hasOwnProperty: object.hasOwnProperty,
-        forInOwn: object.forInOwn,
-        toString: object.toString,
-        slice: array.slice
-    };
+
+    /**
+     * slice
+     *
+     * @method slice
+     * @example array.slice([1, 2]);
+     * @param {Array} arr array to be sliced
+     * @return {Array} array after being sliced
+     */
+    exports.slice = exports.array.slice = exports.uncurrying(slicePrototype);
+
+
+    return exports;
 });
