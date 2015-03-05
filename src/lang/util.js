@@ -1,50 +1,51 @@
-define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, generic, _) {
-    var object = {},
-        array = {},
-        fn = {},
-        string = {};
+define(function (require) {
+    'use strict';
 
-    object.values = function(obj) {
-        var keys = _.object.keys(obj),
-            values = [];
-        for(var i = 0, iLen = keys.length; i < iLen; i++) {
-            values.push( obj[keys[i]] );
-        }
+    /**
+     * utility functions of koko
+     *
+     * @exports util
+     */
+    var exports = {};
+
+    exports.object = {};
+    exports.string = {};
+
+    var type = require('./type');
+    var generic = require('./generic');
+    var _ = require('./es5');
+
+    /**
+     * get values of an object
+     *
+     * @method values
+     * @param {Object} obj target object
+     * @return {Array.<string>} the value array
+     */
+    exports.values = exports.object.values = function (obj) {
+        var values = [];
+        generic.forInOwn(obj, function (value, key) {
+            values.push(value);
+        });
         return values;
     };
 
+
     /**
-     * extend
-     * @ object.extend([isDeep], prev, add1[, addN] )
-     * @return {Object}         result
+     * extend object
+     *
+     * @method extend
+     * @param {boolean=} isDeep if deep extend or not
+     * @param {Object} prev the previous object
+     * @param {...Object} adds the to be added object
+     * @return {Object} result
      */
-    /**
-     * shallow extend without Bollean
-     * @param  {Object} isDeep the actual prev object
-     * @param  {Object}  prev   the to be add object1
-     * @param  {Object}  adds   the to be add object2
-     * @return {Object}         result
-     */
-    /**
-     * shallow extend with Bollean
-     * @param  {boolean} isDeep should be false
-     * @param  {Object}  prev   the prev object
-     * @param  {Object}  adds   the to be add object1
-     * @return {Object}         result
-     */
-    /**
-     * deep extend
-     * @param  {boolean} isDeep should be true
-     * @param  {Object}  prev   the prev object
-     * @param  {Object}  adds   the to be add object1
-     * @return {Object}         result
-     */
-    object.extend = function(isDeep, prev, adds) {
-        var i,
-            addNum = arguments.length,
-            prevInside,
-            isDeepInside;
-        if(type.typeOf(isDeep) !== 'boolean') {
+    exports.extend = exports.object.extend = function (isDeep, prev, adds) {
+        var i;
+        var prevInside;
+        var isDeepInside;
+
+        if (type.typeOf(isDeep) !== 'boolean') {
             i = 1;
             prevInside = isDeep;
             isDeepInside = false;
@@ -53,13 +54,15 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
             prevInside = prev;
             isDeepInside = isDeep;
         }
-        for(; i < addNum; i++) {
+
+        var addNum = arguments.length;
+        for (; i < addNum; i++) {
             var obj = arguments[i];
-            if(obj) {
-                generic.forInOwn(obj, function(value, key) {
-                    if(value !== prevInside) {
-                        if(isDeepInside && type.isPlainObject(value) && type.isPlainObject(prevInside[key])) {
-                            object.extend(isDeepInside, prevInside[key], value);
+            if (obj) {
+                generic.forInOwn(obj, function (value, key) {
+                    if (value !== prevInside) {
+                        if (isDeepInside && type.isPlainObject(value) && type.isPlainObject(prevInside[key])) {
+                            exports.extend(isDeepInside, prevInside[key], value);
                         } else {
                             prevInside[key] = value;
                         }
@@ -67,17 +70,19 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
                 });
             }
         }
+
         return prevInside;
     };
 
-    string.contains = function(source, searchString, seperator) {
-        seperator = seperator || ' ';
-        source = seperator + source + seperator;
-        searchString = seperator + _.trim(searchString) + seperator;
-        return source.indexOf(searchString) > -1;
-    };
 
-    string.encodeHTML = function(str) {
+    /**
+     * encodeHTML
+     *
+     * @method encodeHTML
+     * @param {string} str target string
+     * @return {string} result
+     */
+    exports.encodeHTML = exports.string.encodeHTML = function (str) {
         return String(str)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -86,23 +91,46 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
             .replace(/'/g, '&#39;');
     };
 
-    string.decodeHTML = function(str) {
+
+    /**
+     * decodeHTML
+     *
+     * @method decodeHTML
+     * @param {string} str target string
+     * @return {string} result
+     */
+    exports.decodeHTML = exports.string.decodeHTML = function (str) {
         var result = String(str)
-            .replace(/&quot;/g,'"')
-            .replace(/&lt;/g,'<')
-            .replace(/&gt;/g,'>')
-            .replace(/&amp;/g, "&");
-        //处理转义的中文和实体字符
-        return result.replace(/&#([\d]+);/g, function(_0, _1){
+            .replace(/&quot;/g, '"')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&amp;/g, '&');
+        return result.replace(/&#([\d]+);/g, function (_0, _1) {
             return String.fromCharCode(parseInt(_1, 10));
         });
     };
 
-    string.escapeRegExp = function(str) {
+
+    /**
+     * escapeRegExp
+     *
+     * @method escapeRegExp
+     * @param {string} str target string
+     * @return {string} result
+     */
+    exports.escapeRegExp = exports.string.escapeRegExp = function (str) {
         return String(str).replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
     };
 
-    string.toCamelCase = function(str) {
+
+    /**
+     * convert target string to camel case
+     *
+     * @method toCamelCase
+     * @param {string} str target string
+     * @return {string} converted string
+     */
+    exports.toCamelCase = exports.string.toCamelCase = function (str) {
         return String(str).replace(
             /-([\da-z])/gi,
             function (match, letter) {
@@ -111,15 +139,16 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
         );
     };
 
+
     /**
-     * convert to pascal case
+     * convert target string to pascal case
      *
      * @method toPascalCase
-     * @param {string} str
-     * @return {string} result
+     * @param {string} str target string
+     * @return {string} converted string
      */
-    string.toPascalCase =  function (str) {
-        return string.toCamelCase(str).replace(
+    exports.toPascalCase = exports.string.toPascalCase = function (str) {
+        return exports.toCamelCase(str).replace(
             /^[a-z]/,
             function (match) {
                 return match.toUpperCase();
@@ -127,49 +156,162 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
         );
     };
 
-    string.toDash = function(str) {
+
+    /**
+     * convert target string to dash case
+     *
+     * @method toDash
+     * @param {string} str target string
+     * @return {string} converted string
+     */
+    exports.toDash = exports.string.toDash = function (str) {
         return String(str).replace(/([A-Z])/g, '-$1').toLowerCase();
     };
+
 
     /**
      * pad source with leading character
      *
      * @method pad
-     * @param  {(string|number)} source [description]
-     * @param  {number} width [description]
-     * @param  {string} leading [description]
-     * @return {string} [description]
+     * @param {(number | string)} source source
+     * @param {number} width string width after paded
+     * @param {string} leading leading character
+     * @return {string} result
      */
-    string.pad = function(source, width, leading) {
+    exports.pad = exports.string.pad = function (source, width, leading) {
         var str = String(source);
         return str.length > width
-                ? str
-                : new Array(width - str.length + 1).join(leading) + str;
+            ? str
+            : new Array(width - str.length + 1).join(leading) + str;
     };
 
+
     /**
-     * pad number with leading zeros
+     * pad number with leading zero
      *
      * @method padZero
-     * @param  {(string|number)} source [description]
-     * @param  {number} width [description]
-     * @return {string} [description]
+     * @param {(number | string)} source source
+     * @param {number} width string width after paded
+     * @return {string} result
      */
-    string.padZero = function(source, width) {
+    exports.padZero = exports.string.padZero = function (source, width) {
         var str = String(Math.abs(source | 0));
-        return (source < 0 ? '-' : '')
-            + string.pad(str, width, '0');
+        return (source < 0 ? '-' : '') + exports.pad(str, width, '0');
     };
 
 
     /**
-     * [clone description]
-     * @param  {Object(plainObject)|Array|RegExp|Date|String|Number|Boolean|HTMLElement} source [description]
-     * @description cannot clone {Error|Function|Null|Undefined|objects created with custom constructor}
-     * @return {Object(plainObject)|Array|RegExp|Date|String|Number|Boolean|HTMLElement}        [description]
+     * clone object
+     *
+     * @inner
+     * @method cloneObject
+     * @param {boolean=} isDeep if deep clone or not
+     * @param {Object} obj target object
+     * @return {Object} result
      */
-    function clone(source) {
-        switch(type.typeOf(source)) {
+    function cloneObject(isDeep, obj) {
+        var result = {};
+        var isDeepInside;
+        var objInside;
+
+        if (type.typeOf(isDeep) !== 'boolean') {
+            isDeepInside = false;
+            objInside = isDeep;
+        } else {
+            isDeepInside = isDeep;
+            objInside = obj;
+        }
+
+        if (type.isPlainObject(objInside)) {
+            if (isDeepInside) {
+                generic.forInOwn(objInside, function (value, key) {
+                    result[key] = exports.clone(value);
+                });
+            } else {
+                generic.forInOwn(objInside, function (value, key) {
+                    result[key] = value;
+                });
+            }
+            return result;
+        }
+
+        return objInside;
+    }
+
+
+    /**
+     * clone array
+     *
+     * @inner
+     * @method cloneArray
+     * @param {boolean=} isDeep if deep clone or not
+     * @param {Array} arr target arrya
+     * @return {Array} result
+     */
+    function cloneArray(isDeep, arr) {
+        var result = [];
+        var isDeepInside;
+        var arrInside;
+
+        if (type.typeOf(isDeep) !== 'boolean') {
+            isDeepInside = false;
+            arrInside = isDeep;
+        } else {
+            isDeepInside = isDeep;
+            arrInside = arr;
+        }
+
+        if (isDeepInside) {
+            _.forEach(arrInside, function (item, index) {
+                result[index] = exports.clone(item);
+            });
+        } else {
+            result = arrInside.slice();
+        }
+
+        return result;
+    }
+
+
+    /**
+     * clone regexp
+     *
+     * @inner
+     * @method cloneRegExp
+     * @param {RegExp} regexp target regexp
+     * @return {RegExp} result
+     */
+    function cloneRegExp(regexp) {
+        var flags = '';
+        flags += regexp.multiline ? 'm' : '';
+        flags += regexp.global ? 'g' : '';
+        flags += regexp.ignorecase ? 'i' : '';
+        return new RegExp(regexp.source, flags);
+    }
+
+
+    /**
+     * clone date
+     *
+     * @inner
+     * @method cloneDate
+     * @param {Date} date target date
+     * @return {Date} result
+     */
+    function cloneDate(date) {
+        return new Date(+date);
+    }
+
+
+    /**
+     * clone target variable
+     *
+     * @method clone
+     * @param {(Object | Array | RegExp | Date | string | number | boolean | HTMLElement)} source target variable
+     * @return {(Object | Array | RegExp | Date | string | number | boolean | HTMLElement)} result
+     */
+    exports.clone = function (source) {
+        switch (type.typeOf(source)) {
             case 'object':
                 return cloneObject(true, source);
             case 'array':
@@ -183,101 +325,8 @@ define(['koko/lang/type', 'koko/lang/generic', 'koko/lang/es5'], function(type, 
             default:
                 return source;
         }
-    }
-
-    /**
-     * [cloneObject description]
-     * cloneObject([isDeep], obj)
-     * @param  {Boolean|Object} isDeep [description]
-     * @param  {?Object}  obj    [description]
-     * @return {Object}         [description]
-     */
-    function cloneObject(isDeep, obj) {
-        var result = {},
-            isDeepInside,
-            objInside;
-        if(type.typeOf(isDeep) !== 'boolean') {
-            isDeepInside = false;
-            objInside = isDeep;
-        } else {
-            isDeepInside = isDeep;
-            objInside = obj;
-        }
-        if(type.isPlainObject(objInside)) {
-            if(isDeepInside) {
-                generic.forInOwn(objInside, function(value, key) {
-                    result[key] = clone(value);
-                });
-            } else {
-                generic.forInOwn(objInside, function(value, key) {
-                    result[key] = value;
-                });
-            }
-            return result;
-        }
-        return objInside;
-    }
-
-    /**
-     * [cloneArray description]
-     * cloneArray([isDeep], arr)
-     * @param  {boolean|Array} isDeep [description]
-     * @param  {?Array}  arr    [description]
-     * @return {Array}         [description]
-     */
-    function cloneArray(isDeep, arr) {
-        var result = [],
-            isDeepInside,
-            arrInside;
-        if(type.typeOf(isDeep) !== 'boolean') {
-            isDeepInside = false;
-            arrInside = isDeep;
-        } else {
-            isDeepInside = isDeep;
-            arrInside = arr;
-        }
-        if(isDeepInside) {
-            _.forEach(arrInside, function(item, index) {
-                result[index] = clone(item);
-            });
-        } else {
-            result = arrInside.slice();
-        }
-        return result;
-    }
-
-    /**
-     * [cloneRegExp description]
-     * @param  {RegExp} regexp [description]
-     * @return {RegExp}        [description]
-     */
-    function cloneRegExp(regexp) {
-        var flags = '';
-        flags += regexp.multiline ? 'm' : '';
-        flags += regexp.global ? 'g' : '';
-        flags += regexp.ignorecase ? 'i' : '';
-        return new RegExp(regexp.source, flags);
-    }
-
-    /**
-     * [cloneDate description]
-     * @param  {Date} date [description]
-     * @return {Date}      [description]
-     */
-    function cloneDate(date) {
-        return new Date(+date);
-    }
-
-    return {
-        object: object,
-        fn: fn,
-        string: string,
-        extend: object.extend,
-        escapeRegExp: string.escapeRegExp,
-        toCamelCase: string.toCamelCase,
-        toPascalCase: string.toPascalCase,
-        toDash: string.toDash,
-        clone: clone,
-        padZero: string.padZero
     };
+
+
+    return exports;
 });
