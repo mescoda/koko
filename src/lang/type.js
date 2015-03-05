@@ -1,115 +1,183 @@
-define(function() {
-    var class2type = {},
-        typeName = ['Boolean', 'Number', 'String', 'Function', 'Array', 'Date', 'RegExp', 'Object', 'Error'];
+define(function (require) {
+    'use strict';
 
-    for(var i = 0, iLen = typeName.length; i < iLen; i++) {
-        class2type[ '[object ' + typeName[i] + ']' ] = typeName[i].toLowerCase();
+    /**
+     * type check functions of koko
+     *
+     * @exports type
+     */
+    var exports = {};
+
+    var class2type = {};
+    var typeName = ['Boolean', 'Number', 'String', 'Function', 'Array', 'Date', 'RegExp', 'Object', 'Error'];
+
+    for (var i = 0, iLen = typeName.length; i < iLen; i++) {
+        class2type['[object ' + typeName[i] + ']'] = typeName[i].toLowerCase();
     }
 
-    function typeOf(obj) {
-        if(obj == null) {
+
+    /**
+     * get the type of source
+     *
+     * @method typeOf
+     * @param {*} source source to be checked
+     * @return {string} result
+     */
+    exports.typeOf = function (source) {
+        /* jshint ignore:start */
+        if (source == null) {
             // null or undefined
-            return String(obj);
+            return String(source);
         }
-        if(typeof obj === 'object' && 'nodeType' in obj) {
+        /* jshint ignore:end */
+
+        if (typeof source === 'object' && 'nodeType' in source) {
             return 'dom';
         }
-        if(typeof obj === 'object' || typeof obj === 'function') {
-            return class2type[ Object.prototype.toString.call(obj) ] || 'object';
-        } else {
-            return typeof obj;
+
+        if (typeof source === 'object' || typeof source === 'function') {
+            return class2type[Object.prototype.toString.call(source)] || 'object';
         }
-    }
 
-    function isArray(obj) {
-        return Array.isArray ? Array.isArray(obj) : typeOf(obj) === 'array';
-    }
+        return typeof source;
+    };
 
-    function isArrayLike(obj) {
-        var length = obj.length,
-            type = typeOf(obj);
-        if(isWindow(obj)) {
+
+    /**
+     * check if source is array or not
+     *
+     * @method isArray
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isArray = function (source) {
+        return Array.isArray ? Array.isArray(source) : exports.typeOf(source) === 'array';
+    };
+
+
+    /**
+     * check if source is window or not
+     *
+     * @method isWindow
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isWindow = function (source) {
+        /* jshint ignore:start */
+        // should use eqeq; eqeqeq would be false in ie6
+        return source != null && source == source.window;
+        /* jshint ignore:end */
+    };
+
+
+    /**
+     * isObject
+     *
+     * @method isObject
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isObject = function (source) {
+        return source === Object(source);
+    };
+
+
+    /**
+     * isEmptyObject
+     *
+     * @method isEmptyObject
+     * @param {Object} obj object to be checked
+     * @return {boolean} result
+     */
+    exports.isEmptyObject = function (obj) {
+        for (var i in obj) {
             return false;
         }
-        if(obj.nodeType === 1 && length) {
-            return true;
-        }
-        return type === "array"
-            || type !== "function"
-            && ( length === 0
-                || typeof length === "number" && length > 0 && ( length - 1 ) in obj
-                );
-    }
+        return true;
+    };
 
-    function isObject(obj) {
-        return obj === Object(obj);
-    }
 
-    function isPlainObject(obj) {
+    /**
+     * check if source is a plain object (created using '{}' or 'new Object') or not
+     *
+     * @method isPlainObject
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isPlainObject = function (source) {
         var hasOwnProperty = Object.prototype.hasOwnProperty;
-        if( !obj
-            || Object.prototype.toString.call(obj) !== '[object Object]'
-            || typeOf(obj) === 'dom'
-            || isWindow(obj)
+
+        if (!source
+            || Object.prototype.toString.call(source) !== '[object Object]'
+            || exports.typeOf(source) === 'dom'
+            || exports.isWindow(source)
         ) {
             return false;
         }
 
         // for: new fn
         try {
-            if ( obj.constructor
-                && !hasOwnProperty.call(obj, 'constructor')
-                && !hasOwnProperty.call(obj.constructor.prototype, 'isPrototypeOf')
+            if (source.constructor
+                && !hasOwnProperty.call(source, 'constructor')
+                && !hasOwnProperty.call(source.constructor.prototype, 'isPrototypeOf')
             ) {
                 return false;
             }
-        } catch(e) {
+        } catch (e) {
             return false;
         }
 
-        for(var key in obj) {}
-        return key === undefined || hasOwnProperty.call(obj, key);
-    }
-
-    function isEmptyObject(obj) {
-        for(var i in obj) {
-            return false;
-        }
-        return true;
-    }
-
-    function isFunction(fn) {
-        return typeOf(fn) === 'function';
-    }
-
-    function isElement(elem) {
-        return (typeOf(elem) === 'dom') && (elem.nodeType === 1);
-    }
-
-    function isWindow(obj) {
-        // should be eqeq; ie6 eqeqeq false
-        return obj != null && obj == obj.window;
-    }
-
-    function isUndefined(target) {
-        return target === void 0;
-    }
-
-    function isNumeric(target) {
-        return !isArray(target) && target - parseFloat(target) >= 0;
-    }
-
-    return {
-        typeOf: typeOf,
-        isArray: isArray,
-        isArrayLike: isArrayLike,
-        isObject: isObject,
-        isPlainObject: isPlainObject,
-        isEmptyObject: isEmptyObject,
-        isFunction: isFunction,
-        isElement: isElement,
-        isWindow: isWindow,
-        isUndefined: isUndefined,
-        isNumeric: isNumeric
+        for (var key in source) {}
+        return key === undefined || hasOwnProperty.call(source, key);
     };
+
+
+    /**
+     * isFunction
+     *
+     * @method isFunction
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isFunction = function (source) {
+        return exports.typeOf(source) === 'function';
+    };
+
+
+    /**
+     * check if source is an element node or not
+     *
+     * @method isElement
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isElement = function (source) {
+        return (exports.typeOf(source) === 'dom') && (source.nodeType === 1);
+    };
+
+
+    /**
+     * isUndefined
+     *
+     * @method isUndefined
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isUndefined = function (source) {
+        return source === void 0;
+    };
+
+
+    /**
+     * isNumeric
+     *
+     * @method isNumeric
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isNumeric = function (source) {
+        return !exports.isArray(source) && source - parseFloat(source) >= 0;
+    };
+
+    return exports;
 });
