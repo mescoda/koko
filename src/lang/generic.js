@@ -100,17 +100,18 @@ define(function (require) {
      * @method forInOwn
      * @param {Object} obj object to be looped
      * @param {Function} fn iterator function
+     * @param {Object=} context iterator context
      */
-    exports.forInOwn = exports.object.forInOwn = function (obj, fn) {
+    exports.forInOwn = exports.object.forInOwn = function (obj, fn, context) {
         for (var key in obj) {
             if (exports.hasOwnProperty(obj, key)) {
-                fn(obj[key], key, obj);
+                fn.call(context, obj[key], key, obj);
             }
         }
         if (dontEnums) {
             for (var i = 0, iLen = dontEnums.length; i < iLen; i++) {
                 if (exports.hasOwnProperty(obj, dontEnums[i])) {
-                    fn(obj[dontEnums[i]], dontEnums[i], obj);
+                    fn.call(context, obj[dontEnums[i]], dontEnums[i], obj);
                 }
             }
         }
