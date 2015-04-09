@@ -35,43 +35,50 @@ define(function (require) {
      * extend object
      *
      * @method extend
-     * @param {boolean=} isDeep if deep extend or not
-     * @param {Object} prev the previous object
+     * @param {boolean=} isDeepArg if deep extend or not
+     * @param {Object} prevArg the previous object
      * @param {...Object} adds the to be added object
      * @return {Object} result
      */
-    exports.extend = exports.object.extend = function (isDeep, prev, adds) {
+    exports.extend = exports.object.extend = function (isDeepArg, prevArg, adds) {
         var i;
-        var prevInside;
-        var isDeepInside;
+        var prev;
+        var isDeep;
 
-        if (type.typeOf(isDeep) !== 'boolean') {
+        if (type.typeOf(isDeepArg) !== 'boolean') {
             i = 1;
-            prevInside = isDeep;
-            isDeepInside = false;
+            prev = isDeepArg;
+            isDeep = false;
         } else {
             i = 2;
-            prevInside = prev;
-            isDeepInside = isDeep;
+            prev = prevArg;
+            isDeep = isDeepArg;
         }
 
         var addNum = arguments.length;
         for (; i < addNum; i++) {
-            var obj = arguments[i];
-            if (obj) {
-                generic.forInOwn(obj, function (value, key) {
-                    if (value !== prevInside) {
-                        if (isDeepInside && type.isPlainObject(value) && type.isPlainObject(prevInside[key])) {
-                            exports.extend(isDeepInside, prevInside[key], value);
-                        } else {
-                            prevInside[key] = value;
+            var add = arguments[i];
+            // not null or undefined
+            if (add) {
+                generic.forInOwn(add, function (value, key) {
+                    // prevent never-ending loop
+                    if (value !== prev) {
+                        if (isDeep && type.isPlainObject(value)) {
+                            var prevValue = type.isPlainObject(prev[key]) ? prev[key] : {};
+                            prev[key] = exports.extend(isDeep, prevValue, value);
+                        } else if (isDeep && type.isArray(value)) {
+                            var prevValue = type.isArray(prev[key]) ? prev[key] : [];
+                            prev[key] = exports.extend(isDeep, prevValue, value);
+                        // don't bring in undefined values
+                        } else if (!type.isUndefined(value)) {
+                            prev[key] = value;
                         }
                     }
                 });
             }
         }
 
-        return prevInside;
+        return prev;
     };
 
 
