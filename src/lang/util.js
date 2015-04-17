@@ -335,5 +335,33 @@ define(function (require) {
     };
 
 
+    /**
+     * uniqueID
+     *
+     * @type {number}
+     */
+    var uniqueID = 0;
+
+
+    /**
+     * getUniqueID
+     * unique within the entire client session
+     *
+     * @method getUniqueID
+     * @param {string=} prefix id prefix
+     * @return {string | number} id
+     */
+    exports.getUniqueID = function (prefix) {
+
+        /**
+         * id
+         *
+         * @type {number}
+         */
+        var id = ++uniqueID;
+
+        return prefix ? prefix + id : id;
+    };
+
     return exports;
 });
