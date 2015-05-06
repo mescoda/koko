@@ -9,6 +9,7 @@ define(function (require) {
     var exports = {};
 
     exports.object = {};
+    exports.array = {};
     exports.string = {};
 
     var type = require('./type');
@@ -79,6 +80,39 @@ define(function (require) {
         }
 
         return prev;
+    };
+
+
+    /**
+     * Returns a list of integers from start (inclusive) to stop (exclusive),
+     * incremented (or decremented) by step, exclusive.
+     * ranges that stop before they start are considered to be zero-length instead of negative
+     *
+     * @method range
+     * @param {number=} start start number, if omitted, defaults to 0
+     * @param {number} stop end number
+     * @param {number=} step step, defaults to 1
+     * @return {Array} result
+     */
+    exports.range = exports.array.range = function (start, stop, step) {
+        if (arguments.length <= 1) {
+            stop = start || 0;
+            start = 0;
+        }
+
+        step = step || 1;
+
+        var length = Math.max(Math.ceil((stop - start) / step), 0);
+
+        var result = new Array(length);
+
+        for (var i = 0; i < length; i++) {
+            // use assigning value to a specific index rather than push, becauseof perf
+            result[i] = start;
+            start += step;
+        }
+
+        return result;
     };
 
 
