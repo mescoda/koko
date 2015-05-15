@@ -182,5 +182,18 @@ define(function (require) {
     };
 
 
+    /**
+     * is null or undefined
+     *
+     * @method isNullOrUndefined
+     * @param {*} source source to be checked
+     * @return {boolean} result
+     */
+    exports.isNullOrUndefined = function (source) {
+        /* jshint eqeqeq: false */
+        return source == null;
+        /* jshint eqeqeq: true */
+    };
+
     return exports;
 });
